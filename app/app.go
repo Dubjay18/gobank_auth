@@ -55,6 +55,7 @@ func Start() {
 	ah := AuthHandler{service.NewLoginService(authRepository, domain.GetRolePermissions())}
 	r := mux.NewRouter()
 	r.HandleFunc("/auth/login", ah.Login).Methods(http.MethodPost)
+	r.HandleFunc("/auth/verify", ah.Verify).Methods(http.MethodGet)
 	port := os.Getenv("SERVER_PORT")
 	address := os.Getenv("SERVER_ADDRESS")
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), r))
