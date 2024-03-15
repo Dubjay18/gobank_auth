@@ -9,10 +9,10 @@ import (
 )
 
 const (
-	sqlVerifyQry = `SELECT username, u.customer_id, role, group_concat(a.account_id) as account_numbers FROM users u
+	sqlVerifyQry = `SELECT username, u.customer_id, role, string_agg(a.account_id::text, ',') as account_numbers FROM users u
                   LEFT JOIN accounts a ON a.customer_id = u.customer_id
                 WHERE username = $1 and password = $2
-                GROUP BY a.customer_id`
+                GROUP BY a.customer_id, u.username`
 )
 
 type AuthRepository interface {
