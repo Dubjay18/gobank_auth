@@ -2,9 +2,12 @@ package app
 
 import (
 	"fmt"
+	"github.com/Dubjay18/gobank_auth/domain"
+	"github.com/Dubjay18/gobank_auth/service"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"os"
@@ -48,8 +51,10 @@ func Start() {
 	SanityCheck()
 	//mux := http.NewServeMux()
 	dbClient := getDbClient()
+	authRepository := domain.NewAuthRepository(dbClient)
+	ah := AuthHandler{service.NewLoginService(authRepository, domain.GetRolePermissions())}
 	r := mux.NewRouter()
-
+	r.HandleFunc("/auth/login", ah.Login).Methods(http.MethodPost)
 	port := os.Getenv("SERVER_PORT")
 	address := os.Getenv("SERVER_ADDRESS")
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), r))
